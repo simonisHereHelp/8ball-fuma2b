@@ -3,14 +3,13 @@ import { Octokit } from "octokit";
 import { compile, type CompiledPage } from "../compile-md";
 import * as path from "node:path";
 import { getTitleFromFile } from "../source";
-import { meta } from "../meta";
 
 const token = process.env.GITHUB_TOKEN;
 if (!token) throw new Error(`environment variable GITHUB_TOKEN is needed.`);
 
 const config = {
-  owner: "vercel",
-  repo: "next.js",
+  owner: "simonisHereHelp",
+  repo: "8ball-fuma2b",
 };
 
 export const octokit = new Octokit({
@@ -55,7 +54,7 @@ async function getDocsSha() {
     "GET /repos/{owner}/{repo}/git/trees/{tree_sha}",
     {
       ...config,
-      tree_sha: "canary",
+      tree_sha: "main",
       headers: {
         "X-GitHub-Api-Version": "2022-11-28",
       },
@@ -116,6 +115,6 @@ export async function createGitHubSource(): Promise<
   });
 
   return {
-    files: [...pages, ...meta],
+    files: pages,
   };
 }
