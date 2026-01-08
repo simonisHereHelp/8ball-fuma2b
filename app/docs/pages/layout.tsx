@@ -5,6 +5,8 @@ import { getSource } from "@/lib/source";
 import { Body } from "./layout.client";
 import { BoxIcon, RocketIcon } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 export default async function Layout({ children }: { children: ReactNode }) {
   const source = await getSource();
   return (

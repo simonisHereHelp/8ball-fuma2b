@@ -1,25 +1,30 @@
 import { createMdxComponents } from "@/components/mdx";
 import { getSource, isLocal } from "@/lib/source";
-import { DocsPage, DocsBody, DocsTitle } from "fumadocs-ui/page";
+import {
+  DocsPage,
+  DocsBody,
+  DocsDescription,
+  DocsTitle,
+  DocsCategory,
+} from "fumadocs-ui/page";
 import { notFound } from "next/navigation";
 
 export const revalidate = 7200;
+export const dynamic = "force-dynamic";
 
 export default async function Page(props: {
   params: Promise<{ slug?: string[] }>;
 }) {
+  const docsSource = await getSource();
   const params = await props.params;
-  console.info("[docs-page] Rendering docs page.", params.slug);
-  const source = await getSource();
-  console.info("[docs-page] Loaded source for request.");
-  const page = source.getPage(params.slug);
+  const page = docsSource.getPage(params.slug);
   if (!page) notFound();
 
   let content = await page.data.load();
   console.info("[docs-page] Loaded page content.", page.file.path);
 
   if (content.source) {
-    const sourcePage = source.getPage(content.source.split("/"));
+    const sourcePage = docsSource.getPage(content.source.split("/"));
 
     if (!sourcePage)
       throw new Error(
@@ -38,25 +43,26 @@ export default async function Page(props: {
         <MdxContent
           components={createMdxComponents(params.slug?.[0] === "app")}
         />
+        {page.file.name === "index" && (
+          <DocsCategory page={page} from={docsSource} />
+        )}
       </DocsBody>
     </DocsPage>
   );
 }
 
 export async function generateStaticParams(): Promise<{ slug?: string[] }[]> {
-  if (isLocal) {
-    const source = await getSource();
-    return source.generateParams();
-  }
-  return [];
+  if (!isLocal) return [];
+  const docsSource = await getSource();
+  return docsSource.generateParams();
 }
 
 export async function generateMetadata(props: {
   params: Promise<{ slug?: string[] }>;
 }) {
+  const docsSource = await getSource();
   const params = await props.params;
-  const source = await getSource();
-  const page = source.getPage(params.slug);
+  const page = docsSource.getPage(params.slug);
   if (!page) notFound();
 
   return {
