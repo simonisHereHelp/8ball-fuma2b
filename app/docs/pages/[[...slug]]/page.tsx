@@ -1,5 +1,5 @@
 import { createMdxComponents } from "@/components/mdx";
-import { isLocal, source } from "@/lib/source";
+import { getSource, isLocal } from "@/lib/source";
 import {
   DocsPage,
   DocsBody,
@@ -10,10 +10,12 @@ import {
 import { notFound } from "next/navigation";
 
 export const revalidate = 7200;
+export const dynamic = "force-dynamic";
 
 export default async function Page(props: {
   params: Promise<{ slug?: string[] }>;
 }) {
+  const source = await getSource();
   const params = await props.params;
   const page = source.getPage(params.slug);
   if (!page) notFound();
@@ -48,14 +50,16 @@ export default async function Page(props: {
   );
 }
 
-export function generateStaticParams(): { slug?: string[] }[] {
-  if (isLocal) return source.generateParams();
-  return [];
+export async function generateStaticParams(): Promise<{ slug?: string[] }[]> {
+  if (!isLocal) return [];
+  const source = await getSource();
+  return source.generateParams();
 }
 
 export async function generateMetadata(props: {
   params: Promise<{ slug?: string[] }>;
 }) {
+  const source = await getSource();
   const params = await props.params;
   const page = source.getPage(params.slug);
   if (!page) notFound();

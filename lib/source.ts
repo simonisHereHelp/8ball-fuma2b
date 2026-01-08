@@ -1,4 +1,5 @@
 import { loader } from "fumadocs-core/source";
+import { cache } from "react";
 import * as path from "node:path";
 import { createDriveSource } from "./sources/drive";
 import { createLocalSource } from "./sources/local";
@@ -8,8 +9,8 @@ const FileNameRegex = /^\d\d-(.+)$/;
 export const isLocal =
   process.env.LOCAL || process.env.NEXT_PHASE === "phase-production-build";
 
-export async function getSource() {
-  return loader({
+export const getSource = cache(async () =>
+  loader({
     baseUrl: "/docs/pages",
     source: isLocal ? await createLocalSource() : await createDriveSource(),
     slugs(info) {
@@ -28,8 +29,8 @@ export async function getSource() {
 
       return segments;
     },
-  });
-}
+  }),
+);
 
 export function getTitleFromFile(file: string) {
   const acronyms = ["css", "ui", "cli"];
