@@ -1,6 +1,9 @@
+import { auth } from "@/auth";
+import { AuthButtons } from "@/components/auth-buttons";
 import Link from "next/link";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const session = await auth();
   return (
     <main className="flex flex-1 flex-col justify-center text-center">
       <h1 className="mb-4 text-xl font-semibold">Next.js Documentation</h1>
