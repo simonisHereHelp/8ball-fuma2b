@@ -26,7 +26,9 @@ function getAccessToken(session: unknown) {
     (session as { AccessToken?: string; accessToken?: string })?.accessToken;
 
   if (!token) {
-    throw new Error("Drive access token is missing from session.");
+    throw new Error(
+      "Drive access requires a signed-in session with session.AccessToken",
+    );
   }
 
   return token;
