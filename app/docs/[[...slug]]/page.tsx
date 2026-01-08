@@ -1,5 +1,5 @@
 import { createMdxComponents } from "@/components/mdx";
-import { isLocal, source } from "@/lib/source";
+import { getSource, isLocal } from "@/lib/source";
 import { DocsPage, DocsBody, DocsTitle } from "fumadocs-ui/page";
 import { notFound } from "next/navigation";
 
@@ -9,6 +9,7 @@ export default async function Page(props: {
   params: Promise<{ slug?: string[] }>;
 }) {
   const params = await props.params;
+  const source = await getSource();
   const page = source.getPage(params.slug);
   if (!page) notFound();
 
@@ -38,8 +39,11 @@ export default async function Page(props: {
   );
 }
 
-export function generateStaticParams(): { slug?: string[] }[] {
-  if (isLocal) return source.generateParams();
+export async function generateStaticParams(): Promise<{ slug?: string[] }[]> {
+  if (isLocal) {
+    const source = await getSource();
+    return source.generateParams();
+  }
   return [];
 }
 
@@ -47,6 +51,7 @@ export async function generateMetadata(props: {
   params: Promise<{ slug?: string[] }>;
 }) {
   const params = await props.params;
+  const source = await getSource();
   const page = source.getPage(params.slug);
   if (!page) notFound();
 
