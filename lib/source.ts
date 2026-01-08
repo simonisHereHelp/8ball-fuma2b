@@ -1,6 +1,6 @@
 import { loader } from "fumadocs-core/source";
 import * as path from "node:path";
-import { createGitHubSource } from "./sources/github";
+import { createDriveSource } from "./sources/drive";
 import { createLocalSource } from "./sources/local";
 
 const FileNameRegex = /^\d\d-(.+)$/;
@@ -10,7 +10,7 @@ export const isLocal =
 
 export const source = loader({
   baseUrl: "/docs",
-  source: isLocal ? await createLocalSource() : await createGitHubSource(),
+  source: isLocal ? await createLocalSource() : await createDriveSource(),
   slugs(info) {
     const segments = info.flattenedPath
       .split("/")
