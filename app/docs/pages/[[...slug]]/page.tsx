@@ -17,10 +17,14 @@ export default async function Page(props: {
 }) {
   const source = await getSource();
   const params = await props.params;
+  console.info("[docs-page] Rendering docs page.", params.slug);
+  const source = await getSource();
+  console.info("[docs-page] Loaded source for request.");
   const page = source.getPage(params.slug);
   if (!page) notFound();
 
   let content = await page.data.load();
+  console.info("[docs-page] Loaded page content.", page.file.path);
 
   if (content.source) {
     const sourcePage = source.getPage(content.source.split("/"));
@@ -30,6 +34,7 @@ export default async function Page(props: {
         `unresolved source in frontmatter of ${page.file.path}: ${content.source}`,
       );
     content = await sourcePage.data.load();
+    console.info("[docs-page] Loaded source content.", sourcePage.file.path);
   }
 
   const MdxContent = content.body;
@@ -37,14 +42,10 @@ export default async function Page(props: {
   return (
     <DocsPage toc={content.toc} full={content.full}>
       <DocsTitle>{content.title}</DocsTitle>
-      <DocsDescription>{content.description}</DocsDescription>
       <DocsBody>
         <MdxContent
           components={createMdxComponents(params.slug?.[0] === "app")}
         />
-        {page.file.name === "index" && (
-          <DocsCategory page={page} from={source} />
-        )}
       </DocsBody>
     </DocsPage>
   );
@@ -61,6 +62,7 @@ export async function generateMetadata(props: {
 }) {
   const source = await getSource();
   const params = await props.params;
+  const source = await getSource();
   const page = source.getPage(params.slug);
   if (!page) notFound();
 

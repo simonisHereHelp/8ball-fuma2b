@@ -105,15 +105,18 @@ export async function createDriveSource(): Promise<
     };
   }>
 > {
+  console.info("[drive] Initializing Drive source.");
   const session = await auth();
   const accessToken = getAccessToken(session);
   const rootId = process.env.DRIVE_FOLDER_ID;
 
   if (!rootId) {
+    console.error("[drive] Missing DRIVE_FOLDER_ID.");
     throw new Error("DRIVE_FOLDER_ID environment variable is required.");
   }
 
   if (!accessToken) {
+    console.warn("[drive] No access token found; returning metadata only.");
     return {
       files: [...meta],
     };
@@ -122,12 +125,17 @@ export async function createDriveSource(): Promise<
   const pages: VirtualFile[] = [];
 
   for (const folderName of folderNames) {
+    console.info(`[drive] Loading folder: ${folderName}`);
     const folder = await listFolderByName(rootId, folderName, accessToken);
     if (!folder) {
+      console.error(`[drive] Folder not found: ${folderName}`);
       throw new Error(`Drive folder not found: ${folderName}`);
     }
 
     const files = await listFilesInFolder(folder.id, accessToken);
+    console.info(
+      `[drive] Found ${files.length} files in ${folderName}.`,
+    );
 
     for (const file of files) {
       if (!isSupportedDoc(file.name)) {
@@ -142,7 +150,9 @@ export async function createDriveSource(): Promise<
         data: {
           title: getTitleFromFile(virtualPath),
           async load() {
+            console.info(`[drive] Loading file: ${virtualPath}`);
             const content = await fetchFileContent(file.id, accessToken);
+            console.info(`[drive] Compiling file: ${virtualPath}`);
             return compile(virtualPath, content);
           },
         },
@@ -150,6 +160,7 @@ export async function createDriveSource(): Promise<
     }
   }
 
+  console.info(`[drive] Completed source with ${pages.length} pages.`);
   return {
     files: [...pages, ...meta],
   };
