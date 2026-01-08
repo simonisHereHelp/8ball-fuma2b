@@ -6,7 +6,9 @@ import { Body } from "./layout.client";
 import { BoxIcon } from "lucide-react";
 
 export default async function Layout({ children }: { children: ReactNode }) {
+  console.info("[docs-layout] Building docs layout.");
   const source = await getSource();
+  console.info("[docs-layout] Loaded source for page tree.");
   return (
     <Body>
       <DocsLayout

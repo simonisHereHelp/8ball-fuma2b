@@ -9,11 +9,14 @@ export default async function Page(props: {
   params: Promise<{ slug?: string[] }>;
 }) {
   const params = await props.params;
+  console.info("[docs-page] Rendering docs page.", params.slug);
   const source = await getSource();
+  console.info("[docs-page] Loaded source for request.");
   const page = source.getPage(params.slug);
   if (!page) notFound();
 
   let content = await page.data.load();
+  console.info("[docs-page] Loaded page content.", page.file.path);
 
   if (content.source) {
     const sourcePage = source.getPage(content.source.split("/"));
@@ -23,6 +26,7 @@ export default async function Page(props: {
         `unresolved source in frontmatter of ${page.file.path}: ${content.source}`,
       );
     content = await sourcePage.data.load();
+    console.info("[docs-page] Loaded source content.", sourcePage.file.path);
   }
 
   const MdxContent = content.body;
