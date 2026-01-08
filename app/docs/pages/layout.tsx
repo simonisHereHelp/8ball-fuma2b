@@ -1,11 +1,12 @@
 import { DocsLayout } from "fumadocs-ui/layouts/notebook";
 import type { ReactNode } from "react";
 import { baseOptions } from "@/app/docs/base-options";
-import { source } from "@/lib/source";
+import { getSource } from "@/lib/source";
 import { Body } from "./layout.client";
 import { BoxIcon, RocketIcon } from "lucide-react";
 
-export default function Layout({ children }: { children: ReactNode }) {
+export default async function Layout({ children }: { children: ReactNode }) {
+  const source = await getSource();
   return (
     <Body>
       <DocsLayout
