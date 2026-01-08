@@ -49,6 +49,7 @@ export default async function Page(props: {
   }
 
   let content = await page.data.load();
+  console.info("[docs-page] Loaded page content.", page.file.path);
 
   if (content.source) {
     const sourcePage = docsSource.getPage(content.source.split("/"));
@@ -58,6 +59,7 @@ export default async function Page(props: {
         `unresolved source in frontmatter of ${page.file.path}: ${content.source}`,
       );
     content = await sourcePage.data.load();
+    console.info("[docs-page] Loaded source content.", sourcePage.file.path);
   }
 
   const MdxContent = content.body;
@@ -65,7 +67,6 @@ export default async function Page(props: {
   return (
     <DocsPage toc={content.toc} full={content.full}>
       <DocsTitle>{content.title}</DocsTitle>
-      <DocsDescription>{content.description}</DocsDescription>
       <DocsBody>
         <MdxContent
           components={createMdxComponents(params.slug?.[0] === "app")}
