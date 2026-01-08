@@ -50,13 +50,9 @@ export const baseOptions: BaseLayoutProps = {
   },
   links: [
     {
-      text: "Drive Docs",
+      text: "Documentation",
       url: "/docs/pages",
       active: "nested-url",
-    },
-    {
-      text: "Blog",
-      url: "https://nextjs.org/blog",
     },
   ],
 };

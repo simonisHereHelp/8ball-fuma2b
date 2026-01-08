@@ -9,8 +9,8 @@ const token = process.env.GITHUB_TOKEN;
 if (!token) throw new Error(`environment variable GITHUB_TOKEN is needed.`);
 
 const config = {
-  owner: "vercel",
-  repo: "next.js",
+  owner: "simonisHereHelp",
+  repo: "8ball-fuma2b",
 };
 
 export const octokit = new Octokit({

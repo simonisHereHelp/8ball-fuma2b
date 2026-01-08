@@ -8,7 +8,9 @@ import { BoxIcon } from "lucide-react";
 export const dynamic = "force-dynamic";
 
 export default async function Layout({ children }: { children: ReactNode }) {
+  console.info("[docs-layout] Building docs layout.");
   const source = await getSource();
+  console.info("[docs-layout] Loaded source for page tree.");
   return (
     <Body>
       <DocsLayout
@@ -35,7 +37,7 @@ export default async function Layout({ children }: { children: ReactNode }) {
                   <BoxIcon />
                 </span>
               ),
-              url: "/docs/pages",
+              url: "/docs/gallery",
             },
           ],
         }}
