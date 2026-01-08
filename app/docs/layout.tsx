@@ -1,3 +1,4 @@
+import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
 import { DocsLayout } from "fumadocs-ui/layouts/notebook";
 import type { ReactNode } from "react";
 import { source } from "@/lib/source";
