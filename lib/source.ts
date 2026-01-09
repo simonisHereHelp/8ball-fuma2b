@@ -6,10 +6,15 @@ import { createLocalSource } from "./sources/local";
 
 const FileNameRegex = /^\d\d-(.+)$/;
 
-const normalizeSegment = (segment: string) =>
-  segment
-    .normalize("NFC")
-    .replace(/[\u2010-\u2015\u2212\uFF0D]/g, "-");
+const normalizeSegment = (segment: string) => segment.normalize("NFC");
+
+const decodeSegment = (segment: string) => {
+  try {
+    return decodeURIComponent(segment);
+  } catch {
+    return segment;
+  }
+};
 
 export const isLocal =
   process.env.LOCAL || process.env.NEXT_PHASE === "phase-production-build";
@@ -63,4 +68,8 @@ export function getTitleFromFile(file: string) {
 
 export function normalizeSlugSegments(segments?: string[]) {
   return segments?.map(normalizeSegment);
+}
+
+export function normalizeRouteSegments(segments?: string[]) {
+  return segments?.map((segment) => normalizeSegment(decodeSegment(segment)));
 }
