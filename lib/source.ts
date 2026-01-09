@@ -6,7 +6,10 @@ import { createLocalSource } from "./sources/local";
 
 const FileNameRegex = /^\d\d-(.+)$/;
 
-const normalizeSegment = (segment: string) => segment.normalize("NFC");
+const normalizeSegment = (segment: string) =>
+  segment
+    .normalize("NFC")
+    .replace(/[\u2010-\u2015\u2212\uFF0D]/g, "-");
 
 export const isLocal =
   process.env.LOCAL || process.env.NEXT_PHASE === "phase-production-build";
