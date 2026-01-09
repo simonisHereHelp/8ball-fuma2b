@@ -1,15 +1,21 @@
 import { loader } from "fumadocs-core/source";
+import { cache } from "react";
 import * as path from "node:path";
 import { createDriveSource } from "./sources/drive";
 import { createLocalSource } from "./sources/local";
 
 const FileNameRegex = /^\d\d-(.+)$/;
 
+const normalizeSegment = (segment: string) =>
+  segment
+    .normalize("NFC")
+    .replace(/[\u2010-\u2015\u2212\uFF0D]/g, "-");
+
 export const isLocal =
   process.env.LOCAL || process.env.NEXT_PHASE === "phase-production-build";
 
-export async function getSource() {
-  return loader({
+export const getSource = cache(async () =>
+  loader({
     baseUrl: "/docs/pages",
     source: isLocal ? await createLocalSource() : await createDriveSource(),
     slugs(info) {
@@ -18,8 +24,9 @@ export async function getSource() {
         .filter((seg) => !(seg.startsWith("(") && seg.endsWith(")")))
         .map((seg) => {
           const res = FileNameRegex.exec(seg);
+          const normalized = res ? res[1] : seg;
 
-          return res ? res[1] : seg;
+          return normalizeSegment(normalized);
         });
 
       if (segments.at(-1) === "index") {
@@ -28,8 +35,8 @@ export async function getSource() {
 
       return segments;
     },
-  });
-}
+  }),
+);
 
 export function getTitleFromFile(file: string) {
   const acronyms = ["css", "ui", "cli"];
@@ -52,4 +59,8 @@ export function getTitleFromFile(file: string) {
 
   const out = segs.join(" ");
   return out.length > 0 ? out : "Overview";
+}
+
+export function normalizeSlugSegments(segments?: string[]) {
+  return segments?.map(normalizeSegment);
 }
