@@ -4,9 +4,10 @@ import Link from "next/link";
 
 export default async function HomePage() {
   const session = await auth();
+
   return (
     <main className="flex flex-1 flex-col justify-center text-center">
-     <h1 className="mb-4 text-xl font-semibold">我的文件啊</h1>
+      <h1 className="mb-4 text-xl font-semibold">我的文件啊</h1>
       <p className="text-fd-muted-foreground mb-6 max-w-xl mx-auto">
         Sign in with Google to access.
       </p>
