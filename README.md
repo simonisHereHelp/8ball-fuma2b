@@ -30,3 +30,15 @@ Once deployed/started in production mode, it will instead use GitHub API to fetc
 ### Unicode filename normalization (NFC vs NFD)
 
 Some filenames with non-ASCII characters can be represented by multiple Unicode sequences (e.g. composed NFC vs decomposed NFD). Browsers and storage providers may normalize differently, which can lead to route lookup mismatches and 404s if the stored slug and the incoming URL segments are in different forms. This project normalizes doc slugs to NFC during page-tree generation and when resolving route params so filenames remain consistent and routable.
+
+## example Export Get and Exprt fun()
+syntax and code examples
+```
+export async function GET(
+  _req: Request,
+  { params }: { params: { path: string[] } },
+
+export default async function Page(props: {
+  params: Promise<{ slug?: string[] }>;
+})
+```

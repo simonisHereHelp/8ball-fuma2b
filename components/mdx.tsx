@@ -3,7 +3,8 @@ import { ImageZoom } from "fumadocs-ui/components/image-zoom";
 import { Tabs, Tab } from "fumadocs-ui/components/tabs";
 import defaultMdxComponents from "fumadocs-ui/mdx";
 import { Check, X } from "lucide-react";
-import { Fragment, type ReactNode } from "react";
+import { Fragment, type ReactNode, type ComponentPropsWithoutRef } from "react";
+import path from "node:path";
 
 const isRemoteImage = true;
 
@@ -43,9 +44,59 @@ const mdxComponents = {
   ),
 };
 
-export function createMdxComponents(isAppRouter: boolean) {
+type MdxComponentOptions = {
+  isAppRouter: boolean;
+  filePath?: string;
+};
+
+function resolveImageSrc(src: string, filePath?: string) {
+  if (
+    src.startsWith("http://") ||
+    src.startsWith("https://") ||
+    src.startsWith("data:") ||
+    src.startsWith("blob:") ||
+    src.startsWith("/") ||
+    src.startsWith("#")
+  ) {
+    return src;
+  }
+
+  if (!filePath) {
+    return src;
+  }
+
+  const baseDir = path.posix.dirname(filePath);
+  const normalized = path.posix.normalize(path.posix.join(baseDir, src));
+  const encoded = normalized
+    .split("/")
+    .map((segment) => encodeURIComponent(segment))
+    .join("/");
+  return `/api/docs/assets/${encoded}`;
+}
+
+export function createMdxComponents({
+  isAppRouter,
+  filePath,
+}: MdxComponentOptions) {
   return {
     ...mdxComponents,
+    img: ({
+      src,
+      alt,
+      ...props
+    }: ComponentPropsWithoutRef<"img">) => {
+      if (!src) {
+        return null;
+      }
+
+      return (
+        <img
+          src={resolveImageSrc(src, filePath)}
+          alt={alt ?? ""}
+          {...props}
+        />
+      );
+    },
     AppOnly: ({ children }: { children: ReactNode }) =>
       isAppRouter ? <Fragment>{children}</Fragment> : null,
     PagesOnly: ({ children }: { children: ReactNode }) =>
