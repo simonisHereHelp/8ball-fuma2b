@@ -1,16 +1,10 @@
 import type { Source, VirtualFile } from "fumadocs-core/source";
 import { compile, type CompiledPage } from "../compile-md";
 import { getTitleFromFile } from "../source";
-import { meta } from "../meta";
+import { driveCategories, meta } from "../meta";
 import { auth, getAccessToken } from "@/auth";
 
-const folderNames = [
-  "HouseUtilities",
-  "HousePatio",
-  "TaiwanPersonalDocs",
-  "TaiwanHouse",
-  "BanksAndCards",
-];
+const folderNames = [...driveCategories];
 
 const driveBaseUrl = "https://www.googleapis.com/drive/v3/files";
 
@@ -90,6 +84,7 @@ export async function createDriveSource(): Promise<
     pageData: {
       title: string;
       load: () => Promise<CompiledPage>;
+      pageTreeNo?: number;
     };
   }>
 > {
@@ -112,6 +107,7 @@ export async function createDriveSource(): Promise<
 
   const pages: VirtualFile[] = [];
   const folderMeta: VirtualFile[] = [];
+  let pageTreeNo = 0;
 
   for (const folderName of folderNames) {
     console.info(`[drive] Loading folder: ${folderName}`);
@@ -148,6 +144,7 @@ export async function createDriveSource(): Promise<
         path: virtualPath,
         data: {
           title: getTitleFromFile(virtualPath),
+          pageTreeNo: pageTreeNo++,
           async load() {
             console.info(`[drive] Loading file: ${virtualPath}`);
             const content = await fetchFileContent(file.id, accessToken);
