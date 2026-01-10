@@ -5,11 +5,12 @@ import { getSource } from "@/lib/source";
 import { Body } from "./layout.client";
 import { auth, getAccessToken } from "@/auth";
 import { redirect } from "next/navigation";
+import type { Session } from "next-auth";
 
 export const dynamic = "force-dynamic";
 
 export default async function Layout({ children }: { children: ReactNode }) {
-  let session: Awaited<ReturnType<typeof auth>> | null = null;
+  let session: Session | null = null;
 
   try {
     session = await auth();
