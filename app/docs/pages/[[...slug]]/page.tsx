@@ -7,11 +7,40 @@ import {
   DocsTitle,
   DocsCategory,
 } from "fumadocs-ui/page";
+import type { PageTree } from "fumadocs-core/server";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 export const revalidate = 7200;
 export const dynamic = "force-dynamic";
+
+const collectNavItems = (nodes: PageTree.Node[]): PageTree.Item[] => {
+  const list: PageTree.Item[] = [];
+
+  for (const node of nodes) {
+    if (node.type === "folder") {
+      if (node.index) {
+        list.push(node.index);
+      }
+      list.push(...collectNavItems(node.children));
+      continue;
+    }
+
+    if (node.type === "page" && !node.external) {
+      list.push(node);
+    }
+  }
+
+  return list;
+};
+
+const toFooterItem = (item?: PageTree.Item) =>
+  item
+    ? {
+        name: typeof item.name === "string" ? item.name : String(item.name),
+        url: item.url,
+      }
+    : undefined;
 
 export default async function Page(props: {
   params: Promise<{ slug?: string[] }>;
@@ -66,9 +95,29 @@ export default async function Page(props: {
   }
 
   const MdxContent = content.body;
+  const navigationItems = collectNavItems(docsSource.pageTree.children);
+  const totalItems = navigationItems.length;
+  const currentIndex = navigationItems.findIndex((item) => item.url === page.url);
+  const previousIndex =
+    currentIndex > 0 ? currentIndex - 1 : totalItems > 0 ? totalItems - 1 : -1;
+  const nextIndex =
+    currentIndex >= 0
+      ? (currentIndex + 1) % Math.max(totalItems, 1)
+      : -1;
+  const previous = previousIndex >= 0 ? navigationItems[previousIndex] : undefined;
+  const next = nextIndex >= 0 ? navigationItems[nextIndex] : undefined;
 
   return (
-    <DocsPage toc={content.toc} full={content.full}>
+    <DocsPage
+      toc={content.toc}
+      full={content.full}
+      footer={{
+        items: {
+          previous: toFooterItem(previous),
+          next: toFooterItem(next),
+        },
+      }}
+    >
       <DocsTitle>{content.title}</DocsTitle>
       <DocsBody>
         <MdxContent
