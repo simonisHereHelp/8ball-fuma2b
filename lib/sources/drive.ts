@@ -20,7 +20,7 @@ type DriveFile = {
   mimeType?: string;
 };
 
-function getAccessToken(session: unknown) {
+export function getAccessToken(session: unknown) {
   const token = (session as { AccessToken?: string; accessToken?: string })
     ?.AccessToken ??
     (session as { AccessToken?: string; accessToken?: string })?.accessToken;
