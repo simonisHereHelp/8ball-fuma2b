@@ -10,6 +10,21 @@ Moved the access token helper into auth.tsx to keep authentication logic central
 
 Updated the docs asset route to pull getAccessToken directly from @/auth for consistency.
 
+### Route handler signatures (Next.js 15+)
+
+```ts
+export async function GET(
+  _req: Request,
+  { params }: { params: Promise<{ path: string[] }> },
+) {}
+```
+
+```ts
+export default async function Page(props: {
+  params: Promise<{ slug?: string[] }>;
+}) {}
+```
+
 ## fetch(url?alt=media)
 The asset proxy route calls fetch(\${driveBaseUrl}/${fileId}?alt=media`), then returns the response body as an image response, which only works because alt=media` returns the file contents.
 
