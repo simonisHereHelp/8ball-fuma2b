@@ -70,7 +70,10 @@ export default async function Page(props: {
       <DocsTitle>{content.title}</DocsTitle>
       <DocsBody>
         <MdxContent
-          components={createMdxComponents(params.slug?.[0] === "app")}
+          components={createMdxComponents({
+            isAppRouter: params.slug?.[0] === "app",
+            filePath: page.file.path,
+          })}
         />
         {page.file.name === "index" && (
           <DocsCategory page={page} from={docsSource} />
