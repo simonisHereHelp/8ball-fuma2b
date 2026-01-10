@@ -1,14 +1,25 @@
 ## 新的main2026
 
+成功：
+1）Drive Assets -> fetch(?alt=media) -> docs/pages/ + docs/pages/assets (這是proxy）
+···
+fetch(url?alt=media)
+The asset proxy route calls fetch(\${driveBaseUrl}/${fileId}?alt=media`), then returns the response body as an image response, which only works because alt=media` returns the file contents.
+···
 
-Add app/api/docs/assets/[...path]/route.ts with a GET handler that resolves Drive folder/file IDs using the Drive API and streams file contents with proper auth and caching.
-Introduce getAccessToken(session) in auth.tsx and switch lib/sources/drive.ts and the new assets route to use this helper instead of duplicated token logic.
-Update components/mdx.tsx to add resolveImageSrc, change createMdxComponents to accept { isAppRouter, filePath }, and provide an img component that rewrites relative image URLs to /api/docs/assets/....
-Make app/docs/layout.tsx dynamic and server-side by calling getSource() and render the DocsLayout; remove the previous client-only layout file and update page components to pass filePath and isAppRouter to MDX components.
-Add a short README.md snippet showing example GET handler and Page signatures for route handlers.
-Moved the access token helper into auth.tsx to keep authentication logic centralized and updated Drive imports to use it from auth.
+2）components/mdx.tsx： resolveImageSrc （可以是 Drive 本地，也可以是 HTTPs）中文+英文都可以
+3) docs route (如果含中文）需要在做 percent segment(因爲slugKey？）, 否則在browser 會出現404。
+4）assets route: 未經NFC 或是 dash variant標準化，也無需 percent segment, 不會出現404.
+```
+圖片源: 本地或http, 英文或中文 都可以
+![./local_image.png](./local_image.png)
 
-Updated the docs asset route to pull getAccessToken directly from @/auth for consistency.
+![./卡片.jpg](./卡片.jpg)
+
+![http_FSU.edu](https://people.sc.fsu.edu/~jburkardt/data/jpg/vt_logo2.jpg)
+
+![http_oxxostuido.tw](https://www.oxxostudio.tw/img/articles/201405/about-me.jpg)
+```
 
 ### Route handler signatures (Next.js 15+)
 
@@ -24,9 +35,6 @@ export default async function Page(props: {
   params: Promise<{ slug?: string[] }>;
 }) {}
 ```
-
-## fetch(url?alt=media)
-The asset proxy route calls fetch(\${driveBaseUrl}/${fileId}?alt=media`), then returns the response body as an image response, which only works because alt=media` returns the file contents.
 
 原始
 https://github.com/fuma-nama/nextjs-fumadocs.git
