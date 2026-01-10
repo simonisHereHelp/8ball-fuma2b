@@ -59,9 +59,8 @@ export default function Layout({ children }: { children: ReactNode }) {
       <body className="flex flex-col min-h-screen">
         <RootProvider>
           <header className="flex items-center justify-center px-6 py-4">
-            <Link href="/" className="inline-flex items-center gap-3">
+            <Link href="/" className="inline-flex items-center">
               <BagelLogo />
-              <span className="text-lg font-semibold">Bagel</span>
             </Link>
           </header>
           {children}
