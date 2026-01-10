@@ -46,3 +46,15 @@ const {
 
 export { auth, signIn, signOut };
 export const { GET, POST } = handlers;
+
+export function getAccessToken(session: unknown) {
+  const token = (session as { AccessToken?: string; accessToken?: string })
+    ?.AccessToken
+    ?? (session as { AccessToken?: string; accessToken?: string })?.accessToken;
+
+  if (!token) {
+    return null;
+  }
+
+  return token;
+}

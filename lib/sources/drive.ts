@@ -2,7 +2,7 @@ import type { Source, VirtualFile } from "fumadocs-core/source";
 import { compile, type CompiledPage } from "../compile-md";
 import { getTitleFromFile } from "../source";
 import { meta } from "../meta";
-import { auth } from "@/auth";
+import { auth, getAccessToken } from "@/auth";
 
 const folderNames = [
   "HouseUtilities",
@@ -19,18 +19,6 @@ type DriveFile = {
   name: string;
   mimeType?: string;
 };
-
-function getAccessToken(session: unknown) {
-  const token = (session as { AccessToken?: string; accessToken?: string })
-    ?.AccessToken ??
-    (session as { AccessToken?: string; accessToken?: string })?.accessToken;
-
-  if (!token) {
-    return null;
-  }
-
-  return token;
-}
 
 async function driveFetch<T>(url: string, accessToken: string): Promise<T> {
   const res = await fetch(url, {
