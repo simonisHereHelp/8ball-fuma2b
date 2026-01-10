@@ -5,11 +5,18 @@ import { meta } from "../meta";
 import { auth, getAccessToken } from "@/auth";
 
 const folderNames = [
-  "HouseUtilities",
-  "HousePatio",
-  "TaiwanPersonalDocs",
-  "TaiwanHouse",
+  "AutosAndInsurance",
   "BanksAndCards",
+  "HealthAndDental",
+  "HouseMaint",
+  "HousePatio",
+  "HouseUtilities",
+  "InvestAndIRA",
+  "SSAndMedicare",
+  "TaiwanHouse",
+  "TaiwanPersonalDocs",
+  "TaxDocs",
+  "Z-others",
 ];
 
 const driveBaseUrl = "https://www.googleapis.com/drive/v3/files";
