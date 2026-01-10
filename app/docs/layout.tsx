@@ -6,6 +6,7 @@ import { Body } from "./layout.client";
 import { auth, getAccessToken } from "@/auth";
 import { redirect } from "next/navigation";
 import type { Session } from "next-auth";
+import { BagelLogo } from "@/lib/meta";
 
 export const dynamic = "force-dynamic";
 
@@ -29,6 +30,14 @@ export default async function Layout({ children }: { children: ReactNode }) {
       <DocsLayout
         tree={source.pageTree}
         {...baseOptions}
+        nav={{
+          title: (
+            <span className="inline-flex flex-row items-center gap-3 pb-2 [aside_&]:-ms-1.5">
+              <BagelLogo className="size-6" />
+              <span className="font-semibold">Drive Docs</span>
+            </span>
+          ),
+        }}
         sidebar={{
           prefetch: false,
         }}
