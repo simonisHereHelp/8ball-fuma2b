@@ -1,16 +1,10 @@
 import type { Source, VirtualFile } from "fumadocs-core/source";
 import { compile, type CompiledPage } from "../compile-md";
 import { getTitleFromFile } from "../source";
-import { meta } from "../meta";
+import { driveCategories, meta } from "../meta";
 import { auth, getAccessToken } from "@/auth";
 
-const folderNames = [
-  "HouseUtilities",
-  "HousePatio",
-  "TaiwanPersonalDocs",
-  "TaiwanHouse",
-  "BanksAndCards",
-];
+const folderNames = [...driveCategories];
 
 const driveBaseUrl = "https://www.googleapis.com/drive/v3/files";
 
@@ -68,6 +62,16 @@ function isSupportedDoc(name: string) {
   return lower.endsWith(".md") || lower.endsWith(".mdx") || lower.endsWith(".txt");
 }
 
+function orderFilesForTree(files: DriveFile[]) {
+  const indexFiles = files.filter((file) =>
+    /^index\.(md|mdx|txt)$/i.test(file.name),
+  );
+  const otherFiles = files.filter(
+    (file) => !/^index\.(md|mdx|txt)$/i.test(file.name),
+  );
+  return [...indexFiles, ...otherFiles];
+}
+
 async function fetchFileContent(fileId: string, accessToken: string) {
   const url = `${driveBaseUrl}/${fileId}?alt=media`;
   const res = await fetch(url, {
@@ -90,6 +94,7 @@ export async function createDriveSource(): Promise<
     pageData: {
       title: string;
       load: () => Promise<CompiledPage>;
+      pageTreeNo?: number;
     };
   }>
 > {
@@ -112,6 +117,7 @@ export async function createDriveSource(): Promise<
 
   const pages: VirtualFile[] = [];
   const folderMeta: VirtualFile[] = [];
+  let pageTreeNo = 0;
 
   for (const folderName of folderNames) {
     console.info(`[drive] Loading folder: ${folderName}`);
@@ -131,7 +137,9 @@ export async function createDriveSource(): Promise<
       },
     });
 
-    const files = await listFilesInFolder(folder.id, accessToken);
+    const files = orderFilesForTree(
+      await listFilesInFolder(folder.id, accessToken),
+    );
     console.info(
       `[drive] Found ${files.length} files in ${folderName}.`,
     );
@@ -141,13 +149,15 @@ export async function createDriveSource(): Promise<
         continue;
       }
 
-      const virtualPath = `${folderName}/${file.name}`;
+      const currentTreeNo = pageTreeNo;
+      const virtualPath = `${folderName}/${currentTreeNo}: ${file.name}`;
 
       pages.push({
         type: "page",
         path: virtualPath,
         data: {
           title: getTitleFromFile(virtualPath),
+          pageTreeNo: pageTreeNo++,
           async load() {
             console.info(`[drive] Loading file: ${virtualPath}`);
             const content = await fetchFileContent(file.id, accessToken);

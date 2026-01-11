@@ -36,6 +36,9 @@ export default async function Page(props: {
 }) {}
 ```
 
+## Why [[...slug]]
+The docs route uses `[[...slug]]` so the same page can render both the docs index (`/docs/pages`) and nested document paths (`/docs/pages/...`). The double brackets make the slug optional, which avoids needing a separate index route.
+
 原始
 https://github.com/fuma-nama/nextjs-fumadocs.git
 
