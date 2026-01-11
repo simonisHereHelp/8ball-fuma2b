@@ -14,3 +14,9 @@
 :root {
   --fd-layout-width: 1600px;
 }
+
+#nd-sidebar [data-active="true"] {
+  background-color: color-mix(in srgb, var(--fd-primary) 15%, transparent);
+  color: var(--fd-primary);
+  font-weight: 600;
+}
