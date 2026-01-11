@@ -137,7 +137,8 @@ export async function createDriveSource(): Promise<
         continue;
       }
 
-      const virtualPath = `${folderName}/${file.name}`;
+      const currentTreeNo = pageTreeNo;
+      const virtualPath = `${folderName}/${currentTreeNo}: ${file.name}`;
 
       pages.push({
         type: "page",
